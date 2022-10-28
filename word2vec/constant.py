@@ -1,2 +1,2 @@
-PAD_TOKEN = '<PAD>'
-UNK_TOKEN = '<UNK>'
+PAD_TOKEN = "<PAD>"
+UNK_TOKEN = "<UNK>"
