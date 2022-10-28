@@ -1,5 +1,6 @@
 from torch.utils.data import Dataset
 import nltk
+import torch
 
 padding_token = '<PAD>'
 
@@ -23,7 +24,7 @@ class NgramDataset(Dataset):
             self.ys.append(self.corpus.encode(win[WIN_SIZE]))
 
     def __getitem__(self, index):
-        return self.xs[index], self.ys[index]
+        return torch.tensor(self.xs[index]), torch.tensor(self.ys[index])
 
     def __len__(self):
         return len(self.ys)
