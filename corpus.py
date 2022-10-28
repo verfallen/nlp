@@ -44,33 +44,6 @@ class Corpus(object):
             self.word_count += 1
             self.vocab.append(word)
 
-        # for sentence in data:
-        #     self.windows.extend(list(nltk.ngrams(sentence, WIN_SIZE*2+1)))
-
-        # dataset = []
-        # xs, ys = [], []
-        # for win in self.windows:
-        #     xs.append(list(win[0:WIN_SIZE]+ win[WIN_SIZE+1:]))
-        #     ys.append(win[WIN_SIZE])
-        #     dataset.append((list(win[0:WIN_SIZE]+ win[WIN_SIZE+1:]), win[WIN_SIZE]))
-
-        # self.dataset = list(zip(xs,ys))
-
-    # def batch_data(self, batch_size):
-    #     random.shuffle(self.dataset)
-
-    #     sidx = 0
-    #     eidx = batch_size
-    #     while eidx < len(self.dataset):
-    #         batch = self.dataset[sidx:eidx]
-    #         sidx = eidx
-    #         eidx += batch_size
-    #         yield batch
-
-    #     if eidx >= len(self.dataset):
-    #         batch = self.dataset[sidx:]
-    #         yield batch
-
     def encode(self, word):
         if type(word) == list:
             return np.array([self.word2idx[w] for w in word])
