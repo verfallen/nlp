@@ -16,17 +16,18 @@ model = CBOW(vocab_size, embedding_dim)
 criterion = nn.CrossEntropyLoss()
 dataset = NgramDataset(text, corpus)
 
-
 dataloader = torch.utils.data.DataLoader(dataset,
                                          batch_size=10,
                                          shuffle=True,
                                          drop_last=True)
 
-device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
+device = torch.device("cuda:0") if torch.cuda.is_available() else torch.device(
+    "cpu")
+
 
 def train_cbow_origin(model, dataloader, loss, lr, epoches, device):
-    batch_size = 10
-    vocab = torch.tensor(corpus.encode(corpus.vocab)).expand(batch_size, corpus.word_count)
+    vocab = torch.tensor(corpus.encode(corpus.vocab)).expand(
+        batch_size, corpus.word_count)
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
     for epoch in range(epoches):
@@ -42,15 +43,46 @@ def train_cbow_origin(model, dataloader, loss, lr, epoches, device):
 
             running_loss += loss.item()
 
-        print('Epoch: {} Loss: {}'.format(epoch, running_loss))
+        print("Epoch: {} Loss: {}".format(epoch, running_loss))
 
-    print('Finished Training')
+    print("Finished Training")
 
 
+# train_cbow_origin(model,
+#                   dataloader,
+#                   criterion,
+#                   lr=5e-3,
+#                   epoches=800,
+#                   device=device)
 
-train_cbow_origin(model,
-                  dataloader,
-                  criterion,
-                  lr=1e-3,
-                  epoches=800,
-                  device=device)
+
+def train_cbow_neg_sampling(model, dataloader, lr, epoches, device):
+    optimizer = torch.optim.SGD(model.parameters(), lr=lr)
+    # loop over the dataset multiple times
+    for epoch in range(epoches):
+        running_loss = 0.0
+        for i, data in enumerate(dataloader, 0):
+            inputs, labels, negs = data
+            inputs, labels, negs = inputs.to(device), labels.to(
+                device), negs.to(device)
+
+            # zero the parameter gradients
+            optimizer.zero_grad()
+
+            # forward + backward + optimize
+            loss = model(inputs, labels, negs)
+            loss.backward()
+            optimizer.step()
+
+            running_loss += loss.item()
+
+        print("Epoch: {} Loss: {}".format(epoch, running_loss))
+    print("Finished Training")
+
+
+train_cbow_neg_sampling(model, dataloader, lr=5e-3, epoches=800, device=device)
+
+# print(corpus.idx2word[0])
+# for x, y, neg in dataloader:
+#     print(x, y, neg)
+#     break
