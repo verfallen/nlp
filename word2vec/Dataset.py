@@ -1,8 +1,18 @@
+from ast import Return
 from torch.utils.data import Dataset
 import nltk
 import torch
+import numpy as np
+from corpus import WIN_SIZE
 
-padding_token = '<PAD>'
+
+def sample_neg(word_freq, target, context_size, count):
+    negs = torch.multinomial(torch.FloatTensor(word_freq),
+                             2 * context_size + count,
+                             replacement=False)
+    negs = np.setdiff1d(negs.numpy(), target.numpy())
+    negs = negs[:count]
+    return negs
 
 
 class NgramDataset(Dataset):
@@ -13,6 +23,7 @@ class NgramDataset(Dataset):
         self.corpus = corpus
         self.xs = []
         self.ys = []
+        self.negs = []
 
         for sentence in data:
             self.windows.extend(list(nltk.ngrams(sentence, WIN_SIZE * 2 + 1)))
@@ -24,7 +35,9 @@ class NgramDataset(Dataset):
             self.ys.append(self.corpus.encode(win[WIN_SIZE]))
 
     def __getitem__(self, index):
-        return torch.tensor(self.xs[index]), torch.tensor(self.ys[index])
+        target = torch.tensor(self.ys[index])
+        negs = sample_neg(self.corpus.word_freq, target, WIN_SIZE, count=5)
+        return torch.tensor(self.xs[index]), target, torch.tensor(negs)
 
     def __len__(self):
         return len(self.ys)
