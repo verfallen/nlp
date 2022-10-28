@@ -1,4 +1,3 @@
-from curses import window
 from random import random
 import re
 from collections import Counter
@@ -6,6 +5,7 @@ import constant
 import nltk
 import random
 import torch
+import numpy as np
 
 
 def rm_sign(string):
@@ -29,9 +29,9 @@ class Corpus(object):
 
     def __init__(self, data) -> None:
         self.vocab = []
-        self.idx2word = [constant.UNK_TOKEN]
-        self.word2idx = {constant.UNK_TOKEN: 0}
-        self.word_count = 1
+        self.idx2word = []
+        self.word2idx = {}
+        self.word_count = 0
         # self.windows = []
         # self.dataset = []
 
@@ -42,6 +42,7 @@ class Corpus(object):
             self.idx2word.append(word)
             self.word2idx[word] = self.word_count
             self.word_count += 1
+            self.vocab.append(word)
 
         # for sentence in data:
         #     self.windows.extend(list(nltk.ngrams(sentence, WIN_SIZE*2+1)))
@@ -72,5 +73,8 @@ class Corpus(object):
 
     def encode(self, word):
         if type(word) == list:
-            return torch.LongTensor([self.word2idx[w] for w in word])
-        return torch.LongTensor([self.word2idx[word]])
+            return np.array([self.word2idx[w] for w in word])
+        return np.array([self.word2idx[word]])
+
+    def __len__(self):
+        return len(self.idx2word)
