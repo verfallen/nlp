@@ -1,7 +1,7 @@
 import torch
 
 
-def train_cbow_softmax(model, dataloader, loss, vocab, lr, epoches, device):
+def train_cbow_softmax(model, dataloader, vocab, lr, epoches, device):
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
     for epoch in range(epoches):
@@ -64,4 +64,30 @@ def train_sg_neg_sample(model, dataloader, lr, epoches, device):
             running_loss += loss.item()
 
         print("Epoch: {} Loss: {}".format(epoch, running_loss))
+    print("Finished Training")
+    
+    
+def train_cbow_origin(model, dataloader, loss, lr, epoches, device):
+    vocab = torch.tensor(corpus.encode(corpus.vocab)).expand(
+        batch_size, corpus.word_count
+    )
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+
+    for epoch in range(epoches):
+        running_loss = 0.0
+        for inputs, labels in dataloader:
+            inputs, labels = inputs.to(device), labels.to(device)
+
+            optimizer.zero_grad()
+
+            loss = model(inputs, labels, vocab)
+            loss.backward()
+            optimizer.step()
+
+            running_loss += loss.item()
+
+        print("Epoch: {} Loss: {}".format(epoch, running_loss))
+
+    torch.save(model, "cbow_softmax.pt")
+
     print("Finished Training")
