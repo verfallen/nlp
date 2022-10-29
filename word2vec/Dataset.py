@@ -25,11 +25,11 @@ class NgramDataset(Dataset):
         self.ys = []
         self.negs = []
 
+        ngram_size = 2*WIN_SIZE+1
         for sentence in data:
-            self.windows.extend(list(nltk.ngrams(sentence, WIN_SIZE * 2 + 1)))
+            if len(sentence) > ngram_size:
+                self.windows.extend(list(nltk.ngrams(sentence, ngram_size)))
         for win in self.windows:
-            if len(win) < 2 * WIN_SIZE + 1:
-                continue
             x = list(win[0:WIN_SIZE] + win[WIN_SIZE + 1:])
             self.xs.append(self.corpus.encode(x))
             self.ys.append(self.corpus.encode(win[WIN_SIZE]))
