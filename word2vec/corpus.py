@@ -26,7 +26,6 @@ WIN_SIZE = 2
 
 
 class Corpus(object):
-
     def __init__(self, data) -> None:
         self.vocab = []
         self.idx2word = []

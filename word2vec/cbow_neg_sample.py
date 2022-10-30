@@ -15,12 +15,12 @@ class CBOW(nn.Module):
         u = self.embedding_out(targets)
         u_neg = -self.embedding_out(negs)
 
-        target_scores = torch.bmm(u, v.transpose(1, 2)).squeeze(-1).sum(1)
-        neg_scores = torch.bmm(u_neg, v.transpose(1, 2)).squeeze(-1).sum(1)
+        target_scores = torch.bmm(u, v.transpose(1, 2)).squeeze(-1)
+        neg_scores = torch.bmm(u_neg, v.transpose(1, 2)).squeeze(-1)
 
         return self.loss(target_scores, neg_scores)
 
     def loss(self, target_scores, neg_scores):
 
-        prob = F.logsigmoid(target_scores) + F.logsigmoid(neg_scores)
+        prob = F.logsigmoid(target_scores) + F.logsigmoid(neg_scores).sum(1)
         return -torch.mean(prob)

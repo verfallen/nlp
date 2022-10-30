@@ -4,6 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 
+
 class SkipGram(nn.Module):
     def __init__(self, vocab_size, embedding_dim) -> None:
         super().__init__()
@@ -15,12 +16,11 @@ class SkipGram(nn.Module):
         u = self.embedding_out(context)
         u_neg = -self.embedding_out(neg)
 
-        pos_score = torch.bmm(u,v.transpose(1,2)).squeeze(-1)
-        neg_score = torch.bmm(u_neg, v.transpose(1,2)).squeeze(-1)
+        pos_score = torch.bmm(u, v.transpose(1, 2)).squeeze(-1)
+        neg_score = torch.bmm(u_neg, v.transpose(1, 2)).squeeze(-1)
 
         return self.loss(pos_score, neg_score)
 
     def loss(self, target_scores, neg_scores):
         prob = F.logsigmoid(target_scores).sum(1) + F.logsigmoid(neg_scores).sum(1)
         return -torch.mean(prob)
-        

@@ -11,8 +11,8 @@ class SkigGramSoftmax(nn.Module):
         self.embedding_out = nn.Embedding(vocab_size, embedding_dim)
 
     def forward(self, inputs, targets, vocab):
-        # (batch, embedding,1)
-        v = self.embedding_in(inputs).unsqeeze(-1)
+        # (batch,1, embedding)
+        v = self.embedding_in(inputs)
 
         # (batch, win_size, embed_size)
         u = self.embedding_out(targets)
@@ -21,13 +21,12 @@ class SkigGramSoftmax(nn.Module):
         y_norm = self.embedding_out(vocab)
 
         # (batch, win_size)
-        scores = torch.bmm(u, v).squeeze(-1)
+        scores = torch.bmm(u, v.transpose(1, 2)).squeeze(-1)
 
         # (batch, vocab_size)
-        scores_norm = torch.bmm(y_norm, v).squeeze(-1)
-
+        scores_norm = torch.bmm(y_norm, v.transpose(1, 2)).squeeze(-1)
         return self.loss(scores, scores_norm)
 
-    def loss(scores, scores_norm):
-        prob = torch.exp(scores) / torch.sum(torch.exp(scores_norm), 1)
-        return -torch.log(prob)
+    def loss(self, scores, scores_norm):
+        prob = torch.exp(scores) / torch.sum(torch.exp(scores_norm), 1).unsqueeze(1)
+        return -torch.mean(torch.log(prob))
