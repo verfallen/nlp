@@ -24,3 +24,6 @@ class SkipGram(nn.Module):
     def loss(self, target_scores, neg_scores):
         prob = F.logsigmoid(target_scores).sum(1) + F.logsigmoid(neg_scores).sum(1)
         return -torch.mean(prob)
+
+    def pred(self, word_idx):
+        return (self.embedding_in(word_idx) + self.embedding_out(word_idx)) / 2

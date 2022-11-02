@@ -30,3 +30,6 @@ class SkigGramSoftmax(nn.Module):
     def loss(self, scores, scores_norm):
         prob = torch.exp(scores) / torch.sum(torch.exp(scores_norm), 1).unsqueeze(1)
         return -torch.mean(torch.log(prob))
+
+    def pred(self, word_idx):
+        return (self.embedding_in(word_idx) + self.embedding_out(word_idx)) / 2
