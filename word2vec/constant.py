@@ -4,4 +4,5 @@ UNK_TOKEN = "<UNK>"
 batch_size = 512
 neg_size = 16
 epoches = 300
-embedding_dim = 8
+embedding_dim = 100
+win_size = 4
