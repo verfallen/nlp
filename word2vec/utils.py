@@ -22,7 +22,7 @@ def train_cbow_softmax(model, dataloader, vocab, lr, epoches, device, writer):
         print("Epoch: {} Loss: {}".format(epoch, running_loss))
     print("训练{}epoch 使用了 {} s".format(epoches, time.stop()))
     writer.close()
-    torch.save(model, "./models/cbow_softmax.pt")
+    torch.save(model, "./models/cbow_softmax32.pt")
 
 
 def train_cbow_neg_sampling(model, dataloader, lr, epoches, device, writer):
@@ -51,7 +51,7 @@ def train_cbow_neg_sampling(model, dataloader, lr, epoches, device, writer):
         writer.add_scalars("loss", {"cbow_neg": running_loss}, epoch + 1)
     writer.close()
     print("训练{}epoch 使用了 {} s".format(epoches, timer.stop()))
-    torch.save(model, "./models/cbow_neg.pt")
+    torch.save(model, "./models/cbow_neg32.pt")
 
 
 def train_sg_neg_sample(model, dataloader, lr, epoches, device, writer):
@@ -77,7 +77,7 @@ def train_sg_neg_sample(model, dataloader, lr, epoches, device, writer):
         writer.add_scalars("loss", {"sg_neg": running_loss}, epoch + 1)
         print("Epoch: {} Loss: {}".format(epoch, running_loss))
     print("训练时间：{} s".format(time.stop()))
-    torch.save(model, "./models/sg_neg.pt")
+    torch.save(model, "./models/sg_neg32.pt")
     print("Finished Training")
 
 
@@ -102,6 +102,8 @@ def train_sg_softmax(model, dataloader, vocab, lr, epoches, device, writer):
         print("Epoch: {} Loss: {}".format(epoch, running_loss))
     print("训练时间：{} s".format(time.stop()))
     writer.close()
-    torch.save(model, "./models/sg_softmax.pt")
+    torch.save(model, "./models/sg_softmax32.pt")
 
     print("Finished Training")
+
+
