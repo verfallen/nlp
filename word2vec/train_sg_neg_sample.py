@@ -35,8 +35,16 @@ device = torch.device("cuda:1") if torch.cuda.is_available() else torch.device("
 
 model = model.to(device)
 
-vocab = torch.tensor(corpus.encode(corpus.vocab)).expand(C.batch_size, corpus.word_count)
+vocab = torch.tensor(corpus.encode(corpus.vocab)).expand(
+    C.batch_size, corpus.word_count
+)
 vocab = vocab.to(device)
+
+
+def test(model, word):
+    word_idx = corpus.encode(word)
+    pred = model.pred(word_idx)
+
 
 # train_cbow_softmax(model, dataloader, vocab, 2e-3, epoches, device, writer)
 # train_sg_softmax(model, dataloader, vocab, 2e-3, epoches, device, writer)

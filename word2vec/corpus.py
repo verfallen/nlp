@@ -1,7 +1,7 @@
 from random import random
 import re
 from collections import Counter
-import constant
+import constant as C
 import nltk
 import random
 import torch
@@ -13,7 +13,7 @@ def rm_sign(string):
     return string
 
 
-def load_data(file_path="../data/corpus.txt"):
+def load_data(file_path="../data/tonghua.txt"):
     with open(file_path, "r") as f:
         for line in f:
             line = line.strip()
@@ -22,22 +22,21 @@ def load_data(file_path="../data/corpus.txt"):
             yield rm_sign(line.lower()).split()
 
 
-WIN_SIZE = 2
-
-
 class Corpus(object):
-    def __init__(self, data) -> None:
-        self.vocab = []
-        self.idx2word = []
-        self.word2idx = {}
-        self.word_count = 0
+    def __init__(self, data, vocab_size=30000) -> None:
+        self.vocab = [C.UNK_TOKEN]
+        self.idx2word = [C.UNK_TOKEN]
+        self.word2idx = {C.UNK_TOKEN: 0}
+        self.word_count = 1
         self.word_freq = []
 
         flatten = lambda lines: [word for line in lines for word in line]
 
         all_words = flatten(data)
 
-        counter = Counter(all_words).most_common()
+        counter = Counter(all_words).most_common(vocab_size)
+
+        print("文本长度", len(all_words))
         for word, count in counter:
             self.idx2word.append(word)
             self.word2idx[word] = self.word_count
@@ -45,10 +44,25 @@ class Corpus(object):
             self.vocab.append(word)
             self.word_freq.append(count / len(all_words))
 
+        print("词典长度", len(self.vocab))
+
     def encode(self, word):
         if type(word) == list:
-            return np.array([self.word2idx[w] for w in word])
-        return np.array([self.word2idx[word]])
+            return np.array(
+                [
+                    self.word2idx[w]
+                    if w in self.word2idx
+                    else self.word2idx[C.UNK_TOKEN]
+                    for w in word
+                ]
+            )
+        return np.array(
+            [
+                self.word2idx[word]
+                if word in self.word2idx
+                else self.word2idx[C.UNK_TOKEN]
+            ]
+        )
 
     def __len__(self):
         return len(self.idx2word)

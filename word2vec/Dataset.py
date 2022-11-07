@@ -30,8 +30,8 @@ class NgramDataset(Dataset):
         self.negs = []
 
         if self.neg_sampler:
-            self.sample_freq = F.softmax(
-                torch.FloatTensor(self.corpus.word_freq**3 / 4)
+            self.sample_freq = torch.softmax(
+                torch.FloatTensor(self.corpus.word_freq) ** 3 / 4, dim=0
             )
 
         ngram_size = 2 * win_size + 1
