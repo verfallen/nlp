@@ -2,25 +2,26 @@ import numpy as np
 
 
 class HMM(object):
-    def __init__(self, N ,M, pi, A ,B) -> None:
-        self.N = N 
+    def __init__(self, N, M, pi, A, B) -> None:
+        self.N = N
         self.M = M
         self.pi = pi
-        self.A = A 
-        self.B = B 
+        self.A = A
+        self.B = B
 
     def gen_data_from_distribution(self, dist):
         r = np.random.rand()
 
         for i, p in enumerate(dist):
-            if r < p: return i
-            r-=p
-        
-    def generate(self, T:int):
+            if r < p:
+                return i
+            r -= p
+
+    def generate(self, T: int):
         z = self.gen_data_from_distribution(self.pi)
         o = self.gen_data_from_distribution(self.B[z])
         result = [o]
-        for _ in range(T-1):
+        for _ in range(T - 1):
             z = self.gen_data_from_distribution(self.A[z])
             o = self.gen_data_from_distribution(self.B[z])
             result.append(o)
@@ -36,13 +37,24 @@ class HMM(object):
             #     alpha_next[j] = np.sum(alpha * self.A[:, j] * self.B[j, x])
             # alpha = alpha_next
 
-            alpha = np.sum(self.A * self.B[:, x].reshape(1, -1)* alpha.reshape(-1, 1), axis=0)
-            print(alpha, alpha.shape)
+            alpha = np.sum(
+                self.A * self.B[:, x].reshape(1, -1) * alpha.reshape(-1, 1), axis=0
+            )
         return alpha.sum()
-            
+
+    def evaluate_backward(self, X):
+        beta = np.ones(self.N)
+
+        for x in X[:0:-1]:
+            beta_next = np.empty(self.N)
+            for i in range(self.N):
+                beta_next[i] = np.sum(self.A[i, :] * self.B[:, x] * beta)
+
+            beta = beta_next
+        return np.sum(beta * pi * self.B[:, X[0]])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pi = np.array([0.2, 0.4, 0.4])
     A = np.array([[0.5, 0.2, 0.3], [0.3, 0.5, 0.2], [0.2, 0.3, 0.5]])
     B = np.array([[0.5, 0.5], [0.4, 0.6], [0.7, 0.3]])
@@ -53,4 +65,5 @@ if __name__ == '__main__':
     hmm = HMM(N, M, pi, A, B)
 
     # print(hmm.generate(10))
-    print(hmm.evaluate([0,1,0]))
+    # print(hmm.evaluate([0,1,0]))
+    print(hmm.evaluate_backward([0, 1, 0]))
