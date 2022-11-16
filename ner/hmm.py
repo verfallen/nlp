@@ -53,6 +53,26 @@ class HMM(object):
             beta = beta_next
         return np.sum(beta * pi * self.B[:, X[0]])
 
+    def encode(self, X):
+        T = len(X)
+        x = X[0]
+        delta = self.pi * self.B[:, x]
+        varphi = np.zeros((T, self.N), dtype=int)
+        path = [0] * T
+
+        for i in range(1, T):
+            delta = delta.reshape(-1, 1)
+            tmp = delta * self.A
+            varphi[i, :] = np.argmax(tmp, axis=0)
+            delta = np.max(tmp, axis=0) * self.B[:, X[i]]
+
+        path[-1] = np.argmax(delta)
+
+        for i in range(T - 1, 0, -1):
+            path[i - 1] = varphi[i, path[i]]
+
+        return path
+
 
 if __name__ == "__main__":
     pi = np.array([0.2, 0.4, 0.4])
@@ -64,6 +84,8 @@ if __name__ == "__main__":
 
     hmm = HMM(N, M, pi, A, B)
 
+    X = [0, 1, 0]
     # print(hmm.generate(10))
     # print(hmm.evaluate([0,1,0]))
-    print(hmm.evaluate_backward([0, 1, 0]))
+    # print(hmm.evaluate_backward([0, 1, 0]))
+    print(hmm.encode(X))
