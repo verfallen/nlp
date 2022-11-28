@@ -6,3 +6,4 @@ neg_size = 16
 epoches = 50
 embedding_dim = 100
 win_size = 4
+vocab_size = 30000

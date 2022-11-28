@@ -23,7 +23,7 @@ def load_data(file_path="../data/tonghua.txt"):
 
 
 class Corpus(object):
-    def __init__(self, data, vocab_size=30000) -> None:
+    def __init__(self, data, vocab_size=C.vocab_size) -> None:
         self.vocab = [C.UNK_TOKEN]
         self.idx2word = [C.UNK_TOKEN]
         self.word2idx = {C.UNK_TOKEN: 0}
