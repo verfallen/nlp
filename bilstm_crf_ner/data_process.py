@@ -43,5 +43,32 @@ def generate_annotation():
         df.to_csv(ANNOTATION_DIR + filename, header=None, index=None)
 
 
+# 拆分训练集，测试集
+def split_sample(test_size=0.3):
+    files = glob(ANNOTATION_DIR + "*.txt")
+    random.seed(0)
+    random.shuffle(files)
+
+    test_num = int(len(files) * test_size)
+    test_files = files[:test_num]
+    train_files = files[test_num:]
+
+    merge_files(test_files, TEST_SAMPLE_PATH)
+    merge_files(train_files, TRAIN_SAMPLE_PATH)
+
+
+# 将多个文件合并到一个指定文件中
+def merge_files(files, target_path):
+    with open(target_path, "a") as f:
+        for file in files:
+            print(file)
+            text = open(file).read()
+            f.write(text)
+
+
 if __name__ == "__main__":
+    # 生成一对一标注
     generate_annotation()
+
+    # 拆分并生成数据集
+    split_sample()
