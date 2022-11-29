@@ -19,6 +19,6 @@ EMBEDDING_DIM = 100
 HIDDEN_SIZE = 256
 TARGET_SIZE = 31
 LR = 1e-3
-EPOCH = 100
+EPOCH = 5
 
-MODEL_DIR = "./output/model"
+MODEL_DIR = "./output/model/"
